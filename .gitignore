@@ -43,3 +43,6 @@ setup_project.log
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Helper files and docs unused for project
+.helper/

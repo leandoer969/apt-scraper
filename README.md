@@ -2,6 +2,7 @@
 
 > A Python-based apartment listing scraper for Swiss platforms with logging, testing, linting, and CI.
 
+
 ---
 
 ## Project Setup
@@ -31,16 +32,18 @@ setup_project.sh -n apt-scraper -g
 ├── logs/                  # Runtime logs
 ├── notebooks/             # Jupyter notebooks for analysis
 ├── requirements.txt       # Python dependencies
+├── pytest.ini             # Pytest configuration
 ├── src/                   # Main Python package
 │   ├── __init__.py
 │   ├── cli.py             # Command-line interface
 │   ├── scraper.py         # Scraping logic
 │   └── soup.py            # Shared parsing utilities
-└── tests/                 # pytest test suite + fixtures
-    ├── fixtures/          # Sample HTML files
-    ├── conftest.py       # Test configuration & fixtures
-    ├── test_logger.py
-    └── test_scraper.py
+├── tests/                 # pytest test suite + fixtures
+│   ├── fixtures/          # Sample HTML files
+│   ├── conftest.py        # Test configuration & fixtures
+│   ├── test_logger.py
+│   └── test_scraper.py
+└── .helper/               # Local-only files (patches, notes)
 ```
 
 ## Quick Start
