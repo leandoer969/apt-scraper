@@ -1,12 +1,20 @@
-# Bytecode, build artifacts, and caches
+# Byte-compiled Python files
 __pycache__/
 *.py[cod]
-*.egg-info/
+*$py.class
 
-# Virtual environment
+# C extensions
+*.so
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
 .venv/
-ENV/
 env/
+ENV/
 
 # VS Code settings
 .vscode/
@@ -14,12 +22,24 @@ env/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Data and logs
-data/
+# Pytest cache
+.pytest_cache/
+
+# Coverage data
+.coverage
+coverage.xml
+htmlcov/
+
+# Log files and data outputs
+data/apartment_log.json
 logs/
 
-# Environment file (should not be committed)
+# Environment variables
 .env
 
-# Setup tool log file (if any)
+# Setup tool log (if used)
 setup_project.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
