@@ -1,0 +1,25 @@
+# Bytecode, build artifacts, and caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+.venv/
+ENV/
+env/
+
+# VS Code settings
+.vscode/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Data and logs
+data/
+logs/
+
+# Environment file (should not be committed)
+.env
+
+# Setup tool log file (if any)
+setup_project.log

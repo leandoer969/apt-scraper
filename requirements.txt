@@ -1,0 +1,4 @@
+# Default requirements for the project.
+# To update this file with the currently installed packages, run:
+#   ./bin/dev.sh update_requirements
+jupyterlab
