@@ -1,0 +1,59 @@
+# GitHub Actions CI workflow: tests, coverage, formatting, and linting
+name: CI
+
+# Trigger on pushes and pull requests to the main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Python environment
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 3. Install dependencies including dev tools
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-cov black flake8
+
+      # 4. Check code formatting with Black
+      - name: Black format check
+        run: |
+          source venv/bin/activate
+          black --check .
+
+      # 5. Lint the code with flake8
+      - name: Lint with flake8
+        run: |
+          source venv/bin/activate
+          flake8 src tests
+
+      # 6. Run tests and generate coverage report
+      - name: Run pytest with coverage
+        run: |
+          source venv/bin/activate
+          pytest --cov=src --cov-report=xml --cov-report=term-missing
+
+      # 7. Upload coverage report as an artifact (optional)
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage.xml
