@@ -1,11 +1,12 @@
 # tests/test_scraper.py
 # ---------------------
-# Tests for the scraper logic in src/scraper.py
+# Tests for src.scraper scraping logic
 
 import pytest
 from pathlib import Path
-from bs4 import BeautifulSoup
+from typing import Any, Dict, Optional
 
+from bs4 import BeautifulSoup
 from src.scraper import (
     scrape_flatfox,
     clean_chf_amount,
@@ -14,38 +15,35 @@ from src.scraper import (
 
 
 @pytest.fixture
-def flatfox_soup():
+def flatfox_soup() -> BeautifulSoup:
     """
-    Load our saved HTML fixture into a BeautifulSoup object
-    so tests don’t hit the network.
+    Load the Flatfox HTML fixture into BeautifulSoup for parsing.
     """
-    fixture_path = Path(__file__).parent / "fixtures" / "flatfox_listing.html"
-    html = fixture_path.read_text(encoding="utf-8")
+    fixture = Path(__file__).parent / "fixtures" / "flatfox_listing.html"
+    html = fixture.read_text(encoding="utf-8")
     return BeautifulSoup(html, "html.parser")
 
 
 @pytest.fixture
-def sample_url():
-    """A dummy URL matching the Flatfox domain logic."""
-    return "https://flatfox.ch/de/wohnung/pfeffingerstrasse-78-4053-basel/1822657/"
+def sample_url() -> str:
+    """
+    URL for the Flatfox listing to feed into scrape_flatfox.
+    """
+    return "https://flatfox.ch/de/wohnung/" "pfeffingerstrasse-78-4053-basel/1822657/"
 
 
 @pytest.fixture
-def flatfox_data(flatfox_soup, sample_url):
+def flatfox_data(flatfox_soup: BeautifulSoup, sample_url: str) -> Dict[str, Any]:
     """
-    Run scrape_flatfox once per test session and cache the result.
-    This DRYs up tests that just inspect the output dict.
+    Cache the output of scrape_flatfox for reuse in multiple tests.
     """
     return scrape_flatfox(flatfox_soup, sample_url)
 
 
-def test_flatfox_all_fields(flatfox_data):
+def test_flatfox_all_fields(flatfox_data: Dict[str, Any]) -> None:
     """
-    Ensure required fields are populated:
-     - String fields should be non-empty
-     - Numeric rent fields should be int or None
+    Ensure that text fields are non-empty and numeric fields are int or None.
     """
-    # Fields expected to always be non-empty strings
     text_fields = [
         "Listing Title",
         "Address",
@@ -54,18 +52,24 @@ def test_flatfox_all_fields(flatfox_data):
         "Bezugstermin",
         # "Google Maps Link",
     ]
-    for field in text_fields:
-        assert flatfox_data[field], f"{field!r} should not be empty"
+    for fld in text_fields:
+        assert flatfox_data[fld], f"{fld!r} should not be empty"
 
-    # Fields that might be missing (None) or an integer
     numeric_fields = [
         "Netto Miete (CHF)",
         "Nebenkosten (CHF)",
         "Brutto Miete (CHF)",
     ]
-    for field in numeric_fields:
-        val = flatfox_data[field]
-        assert val is None or isinstance(val, int), f"{field!r} should be int or None"
+    for fld in numeric_fields:
+        val = flatfox_data[fld]
+        assert val is None or isinstance(val, int), f"{fld!r} should be int or None"
+
+    # Google Maps Link is optional; if present, ensure it’s a valid URL string
+    gm_link = flatfox_data.get("Google Maps Link")
+    if gm_link is not None:
+        assert isinstance(gm_link, str) and gm_link.startswith(
+            "http"
+        ), "Google Maps Link should be a valid URL if present"
 
 
 @pytest.mark.parametrize(
@@ -78,25 +82,21 @@ def test_flatfox_all_fields(flatfox_data):
         ("foobar", None),
     ],
 )
-def test_clean_chf_amount(raw, expected):
+def test_clean_chf_amount(raw: Optional[str], expected: Optional[int]) -> None:
     """
-    Test the helper that strips non-digits and converts to int.
-    Parametrize lets us run the same logic with different inputs.
+    clean_chf_amount should strip non-digits and convert to int if possible.
     """
     assert clean_chf_amount(raw) == expected
 
 
-def test_detect_unknown_platform():
+def test_detect_unknown_platform() -> None:
     """
-    If the URL doesn’t match any known site, we should:
-     - get Platform="Unknown"
-     - preserve the listing link
-     - leave title as None
+    detect_platform_and_scrape should return a default dict for unknown URLs.
     """
     html = "<html><body><h1>Test</h1></body></html>"
     url = "https://example.com/foo"
-    result = detect_platform_and_scrape(html, url)
+    res = detect_platform_and_scrape(html, url)
 
-    assert result["Platform"] == "Unknown"
-    assert result["Listing Link"] == url
-    assert result["Listing Title"] is None
+    assert res["Platform"] == "Unknown"
+    assert res["Listing Link"] == url
+    assert res["Listing Title"] is None

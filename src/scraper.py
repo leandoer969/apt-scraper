@@ -1,17 +1,39 @@
 import re
+from datetime import date, datetime
+from typing import Any, Dict, Optional
+
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 
-def clean_chf_amount(value):
+def clean_chf_amount(value: Optional[str]) -> Optional[int]:
+    """
+    Convert a Swiss-franc string (e.g., "CHF 1’200") into an integer.
+
+    Args:
+        value: Raw string potentially containing digits and separators.
+
+    Returns:
+        An integer amount if parsing succeeds, otherwise None.
+    """
     if not value:
         return None
-    value = re.sub(r"[^\d]", "", value)
-    return int(value) if value.isdigit() else None
+    digits = re.sub(r"[^\d]", "", value)
+    return int(digits) if digits.isdigit() else None
 
 
-def scrape_homegate(soup, url):
-    data = {
+def scrape_homegate(soup: BeautifulSoup, url: str) -> Dict[str, Any]:
+    """
+    Scrape listing data from a Homegate page.
+
+    Args:
+        soup: Parsed BeautifulSoup document.
+        url: Original listing URL.
+
+    Returns:
+        A dict with keys: Platform, Listing Title, Address,
+        Netto Miete (CHF), Nebenkosten (CHF), Brutto Miete (CHF), Listing Link.
+    """
+    data: Dict[str, Any] = {
         "Platform": "Homegate",
         "Listing Title": None,
         "Address": None,
@@ -26,6 +48,7 @@ def scrape_homegate(soup, url):
     address_tag = soup.find("p", class_="Address")
     if address_tag:
         data["Address"] = address_tag.get_text(strip=True)
+
     for dt in soup.find_all("dt"):
         label = dt.get_text(strip=True)
         dd = dt.find_next_sibling("dd")
@@ -39,8 +62,11 @@ def scrape_homegate(soup, url):
     return data
 
 
-def scrape_immoscout24(soup, url):
-    data = {
+def scrape_immoscout24(soup: BeautifulSoup, url: str) -> Dict[str, Any]:
+    """
+    Scrape listing data from an Immoscout24 page.
+    """
+    data: Dict[str, Any] = {
         "Platform": "Immoscout24",
         "Listing Title": None,
         "Address": None,
@@ -55,13 +81,14 @@ def scrape_immoscout24(soup, url):
     address_tag = soup.find("span", class_="AddressDisplay")
     if address_tag:
         data["Address"] = address_tag.get_text(strip=True)
-    rent_info = soup.find_all("li", class_="BoxRow")
-    for row in rent_info:
+
+    for row in soup.find_all("li", class_="BoxRow"):
         label = row.find("span", class_="BoxLabel")
         value = row.find("span", class_="BoxValue")
         if not label or not value:
             continue
-        label_text, value_text = label.get_text(strip=True), value.get_text(strip=True)
+        label_text = label.get_text(strip=True)
+        value_text = value.get_text(strip=True)
         if "Nettomiete" in label_text:
             data["Netto Miete (CHF)"] = value_text
         elif "Nebenkosten" in label_text:
@@ -71,8 +98,11 @@ def scrape_immoscout24(soup, url):
     return data
 
 
-def scrape_flatfox(soup, url):
-    data = {
+def scrape_flatfox(soup: BeautifulSoup, url: str) -> Dict[str, Any]:
+    """
+    Scrape listing data from a Flatfox page.
+    """
+    data: Dict[str, Any] = {
         "Platform": "Flatfox",
         "Listing Title": None,
         "Address": None,
@@ -91,7 +121,7 @@ def scrape_flatfox(soup, url):
     if h1:
         data["Listing Title"] = h1.get_text(strip=True)
 
-    # Address and Bruttomiete summary (e.g. from <h2>)
+    # Address and Bruttomiete summary
     h2 = h1.find_next("h2") if h1 else None
     if h2:
         text = h2.get_text(strip=True)
@@ -102,22 +132,18 @@ def scrape_flatfox(soup, url):
             if match:
                 data["Brutto Miete (CHF)"] = clean_chf_amount(match.group(0))
 
-    # Extract rent + details table after <h2>Miete</h2> and <h2>Details</h2>
+    # Tables for Miete and Details
     for h2_tag in soup.find_all("h2"):
         heading = h2_tag.get_text(strip=True).lower()
         table = h2_tag.find_next("table")
-
         if not table:
             continue
-
         for row in table.find_all("tr"):
             cols = row.find_all("td")
             if len(cols) != 2:
                 continue
-
             label = cols[0].get_text(strip=True).lower()
             value = cols[1].get_text(strip=True)
-
             if heading == "miete":
                 if "bruttomiete" in label:
                     data["Brutto Miete (CHF)"] = clean_chf_amount(value)
@@ -132,14 +158,14 @@ def scrape_flatfox(soup, url):
                     data["Wohnfläche (m²)"] = value
                 elif "bezugstermin" in label:
                     try:
-                        parsed_date = datetime.strptime(
+                        parsed_date: date = datetime.strptime(
                             value.strip(), "%d.%m.%Y"
                         ).date()
                         data["Bezugstermin"] = parsed_date.isoformat()
                     except ValueError:
-                        data["Bezugstermin"] = value  # fallback to raw string
+                        data["Bezugstermin"] = value
 
-    # Find Google Maps link inside iframe -> <a> with aria-label and maps.google.com
+    # Google Maps link
     for iframe in soup.find_all("iframe"):
         a_tag = iframe.find("a", href=True, attrs={"aria-label": True})
         if a_tag and "maps.google.com" in a_tag["href"]:
@@ -149,7 +175,17 @@ def scrape_flatfox(soup, url):
     return data
 
 
-def detect_platform_and_scrape(html, url):
+def detect_platform_and_scrape(html: str, url: str) -> Dict[str, Any]:
+    """
+    Route HTML content to the correct platform-specific scraper.
+
+    Args:
+        html: Raw HTML string of the listing page.
+        url: URL used to infer the platform.
+
+    Returns:
+        A dict of scraped data or a default "Unknown" platform dict.
+    """
     soup = BeautifulSoup(html, "html.parser")
     if "homegate.ch" in url:
         return scrape_homegate(soup, url)

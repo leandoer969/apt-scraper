@@ -1,31 +1,28 @@
 # tests/conftest.py
 # -----------------
-# This file is automatically loaded by pytest before any tests run.
-# We use it to configure test-wide fixtures, hooks, and imports.
+# Test configuration: add project root to PYTHONPATH
+# and patch LOG_PATH for isolated tests
 
 import sys
-import os
+from pathlib import Path
 import pytest
 
-# 1️⃣ Ensure our project root is on Python’s import path so we can do `import src.*`
-#    without having to install the package or set PYTHONPATH manually.
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, PROJECT_ROOT)
+# Ensure project root is importable for src.* imports
+PROJECT_ROOT = Path(__file__).parent.parent.resolve()
+sys.path.insert(0, str(PROJECT_ROOT))
 
 
 @pytest.fixture(autouse=True)
-def temp_log_path(tmp_path, monkeypatch):
+def temp_log_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """
-    Autouse fixture (runs before every test) that:
-     - Creates a temporary file path
-     - Monkey-patches src.cli.LOG_PATH to point at that temp file
-    This means our tests never write to the real data/apartment_log.json.
+    Autouse fixture: redirect src.cli.LOG_PATH to a temp file so tests do not
+    write to real data/apartment_log.json.
+
+    Returns:
+        A Path to the temporary log file.
     """
-    # tmp_path is a pathlib.Path pointing at a fresh temp directory
     fake = tmp_path / "fake_log.json"
-    # Import the module under test
     import src.cli as cli_mod
 
-    # Replace the LOG_PATH constant with our fake path
     monkeypatch.setattr(cli_mod, "LOG_PATH", fake)
     return fake
