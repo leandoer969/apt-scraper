@@ -2,6 +2,8 @@
 # --------------------
 # Tests for the log_scrape function in src/cli.py
 
+# pylint: disable=import-error,redefined-outer-name
+
 import json
 from datetime import datetime
 from pathlib import Path
@@ -57,9 +59,7 @@ def test_log_new_listing(
     assert on_disk == updated
 
 
-def test_duplicate_detection(
-    dummy_listing: Dict[str, Any], temp_log_path: Path, capsys: Any
-) -> None:
+def test_duplicate_detection(dummy_listing: Dict[str, Any], capsys: Any) -> None:
     """
     If the listing already exists by URL or address,
     the log remains unchanged and a warning is printed.

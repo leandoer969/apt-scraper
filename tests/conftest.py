@@ -3,9 +3,15 @@
 # Test configuration: add project root to PYTHONPATH
 # and patch LOG_PATH for isolated tests
 
+# pytest fixtures & path hack
+# pylint: disable=import-error
+
 import sys
 from pathlib import Path
+
 import pytest
+
+import src.cli as cli_mod
 
 # Ensure project root is importable for src.* imports
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
@@ -22,7 +28,6 @@ def temp_log_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         A Path to the temporary log file.
     """
     fake = tmp_path / "fake_log.json"
-    import src.cli as cli_mod
 
     monkeypatch.setattr(cli_mod, "LOG_PATH", fake)
     return fake

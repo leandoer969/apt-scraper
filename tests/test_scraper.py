@@ -1,17 +1,15 @@
 # tests/test_scraper.py
 # ---------------------
 # Tests for src.scraper scraping logic
+# pylint: disable=import-error,redefined-outer-name
 
-import pytest
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+import pytest
 from bs4 import BeautifulSoup
-from src.scraper import (
-    scrape_flatfox,
-    clean_chf_amount,
-    detect_platform_and_scrape,
-)
+
+from src.scraper import clean_chf_amount, detect_platform_and_scrape, scrape_flatfox
 
 
 @pytest.fixture
