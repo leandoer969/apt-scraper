@@ -1,0 +1,55 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language: python
+        files: ^(src|tests|scripts)/
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        language: python
+        args: ["--profile", "black"]
+        files: ^(src|tests|scripts)/
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.2.0
+    hooks:
+      - id: flake8
+        language: python
+        additional_dependencies:
+          - flake8-bugbear
+        args: [--config=.flake8]
+        files: ^(src|tests|scripts)/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.0
+    hooks:
+      - id: mypy
+        language: python
+        additional_dependencies:
+          - types-requests
+          - types-beautifulsoup4
+        args: ["--config-file", "pyproject.toml"]
+        files: ^(src|tests|scripts)/
+
+  - repo: https://github.com/pre-commit/mirrors-pylint
+    rev: v3.0.0a5
+    hooks:
+      - id: pylint
+        language: python
+        additional_dependencies:
+          - requests
+          - beautifulsoup4
+        args: ["--rcfile", ".pylintrc"]
+        files: ^(src|tests|scripts)/
