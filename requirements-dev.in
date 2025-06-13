@@ -1,0 +1,29 @@
+# requirements-dev.in — everything you need for development & hooks
+
+# Runtime deps (for pip-tools lock)
+requests
+beautifulsoup4
+
+# Test + coverage
+pytest
+pytest-cov
+
+# Formatting + linting
+black
+isort
+flake8
+flake8-bugbear
+
+# Type checking
+mypy
+types-requests
+types-beautifulsoup4
+
+# Pylint & its plugins
+pylint
+
+# Git hooks
+pre-commit
+
+# pip-tools
+pip-tools

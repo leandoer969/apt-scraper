@@ -1,0 +1,5 @@
+# requirements.in — direct dependencies only
+
+# Production
+requests
+beautifulsoup4
