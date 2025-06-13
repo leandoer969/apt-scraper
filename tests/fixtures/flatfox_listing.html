@@ -137,7 +137,7 @@ function OptanonWrapper() {
         const is_android_agent = navigator.userAgent.includes("FlatfoxMobileAndroid");
         const is_ios_agent = navigator.userAgent.includes("FlatfoxMobileIOS");
         const data_source = is_android_agent ? 'app-android' : is_ios_agent ? 'app-ios' : 'web';
-        
+
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push(
             {
@@ -739,7 +739,7 @@ Diese charmante Maisonette-Wohnung erstreckt sich über zwei Etagen und überzeu
      </script>
      <script type="text/javascript">
       function dataLayerPushFooterHtmlLinkByUrl(url) {
-                        
+
                         if (url.endsWith('/')) {
                             url = url.slice(0, -1);
                         }
