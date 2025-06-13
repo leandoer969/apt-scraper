@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List  # , Union
 
 import requests
+from requests.exceptions import RequestException
 
 from src.scraper import detect_platform_and_scrape
 
@@ -67,7 +68,9 @@ def log_scrape(
     log.append(result)
     save_log(log)
 
-    msg = f"✅ Added new apartment: {result['Listing Title']} " f"({result['Address']})"
+    msg = (
+        f"✅ Added new apartment: {result['Listing Title']} " + f"({result['Address']})"
+    )
     print(msg)
     return log
 
@@ -107,7 +110,7 @@ def main() -> None:
 
             log = log_scrape(result, log)
 
-        except Exception as e:
+        except RequestException as e:
             print(f"❌ Failed to process {url}: {e}")
 
 

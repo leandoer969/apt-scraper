@@ -1,7 +1,8 @@
+from pathlib import Path
+from typing import Union
+
 import requests
 from bs4 import BeautifulSoup
-from typing import Union
-from pathlib import Path
 
 
 def save_flatfox_snapshot(url: str, output_path: Union[str, Path]) -> None:
@@ -31,6 +32,6 @@ def save_flatfox_snapshot(url: str, output_path: Union[str, Path]) -> None:
 
 
 if __name__ == "__main__":
-    url_flatfox = "https://flatfox.ch/de/wohnung/sevogelstr-140-4052-basel/1797445/"
-    output_path = Path(__file__).parent.parent / "data" / "flatfox_snapshot.html"
-    save_flatfox_snapshot(url_flatfox, str(output_path))
+    URL_FLATFOX = "https://flatfox.ch/de/wohnung/sevogelstr-140-4052-basel/1797445/"
+    snapshot_path = Path(__file__).parent.parent / "data" / "flatfox_snapshot.html"
+    save_flatfox_snapshot(URL_FLATFOX, snapshot_path)

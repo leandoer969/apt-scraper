@@ -98,6 +98,7 @@ def scrape_immoscout24(soup: BeautifulSoup, url: str) -> Dict[str, Any]:
     return data
 
 
+# pylint: disable=too-many-locals,too-many-branches
 def scrape_flatfox(soup: BeautifulSoup, url: str) -> Dict[str, Any]:
     """
     Scrape listing data from a Flatfox page.
@@ -189,17 +190,17 @@ def detect_platform_and_scrape(html: str, url: str) -> Dict[str, Any]:
     soup = BeautifulSoup(html, "html.parser")
     if "homegate.ch" in url:
         return scrape_homegate(soup, url)
-    elif "immoscout24.ch" in url:
+    if "immoscout24.ch" in url:
         return scrape_immoscout24(soup, url)
-    elif "flatfox.ch" in url:
+    if "flatfox.ch" in url:
         return scrape_flatfox(soup, url)
-    else:
-        return {
-            "Platform": "Unknown",
-            "Listing Title": None,
-            "Address": None,
-            "Netto Miete (CHF)": None,
-            "Nebenkosten (CHF)": None,
-            "Brutto Miete (CHF)": None,
-            "Listing Link": url,
-        }
+    # default for unknown platforms
+    return {
+        "Platform": "Unknown",
+        "Listing Title": None,
+        "Address": None,
+        "Netto Miete (CHF)": None,
+        "Nebenkosten (CHF)": None,
+        "Brutto Miete (CHF)": None,
+        "Listing Link": url,
+    }
