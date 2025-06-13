@@ -150,4 +150,3 @@ Check results under the **Actions** tab in GitHub.
 ---
 
 *Happy scraping!*
-
