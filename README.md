@@ -2,7 +2,6 @@
 
 > A Python-based apartment listing scraper for Swiss platforms with logging, testing, linting, and CI.
 
-
 ---
 
 ## Project Setup
@@ -13,140 +12,105 @@ This project was originally scaffolded using the Project Setup Tool v1.1.2:
 setup_project.sh -n apt-scraper -g
 ```
 
+
 ## Project Structure
 
 ```text
 .
-├── .github/               # GitHub Actions workflows
-│   └── workflows/
-│       └── ci.yml         # CI pipeline (tests, linting, coverage, formatting)
-├── .flake8                # Flake8 configuration
-├── mypy.ini               # Mypy configuration
-├── Dockerfile             # Container build instructions
-├── README.md              # This file
-├── apartment_data_model.txt # Data model reference
-├── aptlogger/             # Browser extension assets
-├── bin/                   # Helper scripts
-│   └── dev.sh             # Development entrypoint
-├── data/                  # JSON log output (`apartment_log.json`)
-├── logs/                  # Runtime logs
-├── notebooks/             # Jupyter notebooks for analysis
-├── requirements.txt       # Python dependencies
-├── pytest.ini             # Pytest configuration
-├── src/                   # Main Python package
+├── .github
+│   └── workflows
+│       └── ci.yml             # GitHub Actions CI pipeline
+├── .gitignore                 # Ignored files/dirs
+├── .pre-commit-config.yaml    # Pre-commit hooks configuration
+├── Makefile                   # Common commands: setup, lint, test, ci, etc.
+├── Dockerfile                 # Container build
+├── README.md                  # This file
+├── apartment_data_model.txt   # Data model reference
+├── aptlogger/                 # Browser extension assets
+├── bin/
+│   └── dev.sh                 # Helper scripts
+├── data/                      # JSON output: apartment_log.json
+├── logs/                      # Runtime logs
+├── notebooks/                 # Jupyter notebooks
+├── requirements.in            # Direct dependencies for pip-tools
+├── requirements-dev.in        # Dev dependencies for pip-tools
+├── requirements.txt           # Pinned dependencies
+├── requirements-dev.txt       # Pinned dev dependencies
+├── pyproject.toml             # Project metadata and tool configs
+├── src/                       # Main Python package
 │   ├── __init__.py
-│   ├── cli.py             # Command-line interface
-│   ├── scraper.py         # Scraping logic
-│   └── soup.py            # Shared parsing utilities
-├── tests/                 # pytest test suite + fixtures
-│   ├── fixtures/          # Sample HTML files
-│   ├── conftest.py        # Test configuration & fixtures
+│   ├── cli.py
+│   ├── scraper.py
+│   └── soup.py
+├── tests/                     # pytest suite + fixtures
+│   ├── fixtures/
+│   ├── conftest.py
 │   ├── test_logger.py
 │   └── test_scraper.py
-└── .helper/               # Local-only files (patches, notes)
+└── .helper/                   # Local-only files (patches, notes)
 ```
+
+---
 
 ## Quick Start
 
-### 1. Clone & Create Virtual Environment
+### Clone the repo
 
 ```bash
 git clone https://github.com/<YOUR-ORG>/apt-scraper.git
 cd apt-scraper
+```
+
+### Create virtual environment & install
+
+Using **Makefile**:
+
+```bash
+make setup       # create venv and install base tools
+make sync        # sync venv to pinned requirements
+make precommit   # install git hooks
+```
+
+Or manually:
+
+```bash
 python3 -m venv .venv
-source .venv/bin/activate      # macOS/Linux
-# .venv\\Scripts\\activate.bat # Windows
-```
-
-### 2. Install Dependencies
-
-```bash
+source .venv/bin/activate           # Windows: .venv\Scripts\activate.bat
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -e '.[dev]'
+pre-commit install
+make sync
 ```
 
-### 3. Run the CLI
+### Running the CLI
 
 ```bash
-# Scrape one or more URLs:
 apt-scraper https://flatfox.ch/... https://homegate.ch/...
 ```
 
-Results are appended to `data/apartment_log.json`.
-
-## Testing & Quality
-
-### Run Tests
-
-```bash
-pytest               # run all tests
-pytest -q            # quiet output
-pytest --maxfail=1   # stop after first failure
-```
-
-### Coverage Report
-
-```bash
-pip install pytest-cov
-pytest --cov=src --cov-report=term-missing
-```
-
-## Linting & Formatting
-
-We use Black, Flake8, and Mypy to enforce style and catch issues:
-
-1. **Black** for auto-formatting (line-length 88):
-   ```bash
-   black .
-   ```
-2. **Flake8** for linting, configured via `.flake8`:
-   ```bash
-   flake8 src tests
-   ```
-   - Create a `.flake8` file at the project root:
-     ```ini
-     [flake8]
-     max-line-length = 88
-     extend-ignore = E203, W503
-     ```
-3. **Mypy** for static type checking, configured via `mypy.ini`:
-   ```bash
-   mypy src
-   ```
-   - Create a `mypy.ini` file at the project root:
-     ```ini
-     [mypy]
-     python_version = 3.11
-     ignore_missing_imports = True
-     ```
-
-This setup ensures Black and Flake8 agree on wrapping, and Mypy ignores missing stubs for third-party libs like `requests`.
-
-## Continuous Integration (GitHub Actions)
-
-All CI steps are defined in `.github/workflows/ci.yml` and run on every push or pull request against `main`:
-
-1. Checkout code
-2. Set up Python 3.11 environment
-3. Install dependencies (including pytest, Black, Flake8, Mypy)
-4. Run **Black** in check mode
-5. Run **Flake8**
-6. Run **mypy**
-7. Run **pytest** with coverage
-8. Upload coverage report as artifact
-
-Check results under the **Actions** tab in GitHub.
-
-## Contributing
-
-1. Fork the repo and create a feature branch
-2. Write or update tests in `tests/`
-3. Ensure all checks pass locally:
-   ```bash
-   black --check . && flake8 src tests && mypy src && pytest --cov=src
-   ```
-4. Open a pull request against `main`
+Results are logged to `data/apartment_log.json`.
 
 ---
 
-*Happy scraping!*
+## Development Tasks
+
+- **Formatting**: `make format` (Black, isort)
+- **Linting**: `make lint` (Flake8, configured via .flake8)
+- **Type checking**: `make typecheck` (Mypy, configured via pyproject.toml)
+- **Tests**: `make test` (pytest)
+- **Coverage**: `make coverage`
+- **Run all checks**: `make ci`
+
+---
+
+## Configuration
+
+- **Black** and **isort**: via `[tool.black]` and `[tool.isort]` in `pyproject.toml`
+- **Flake8**: via `.flake8` at project root
+- **Mypy**: via `[tool.mypy]` in `pyproject.toml`
+- **Pre-commit hooks**: via `.pre-commit-config.yaml`
+- **CI workflow**: `.github/workflows/ci.yml`
+
+---
+
+For contributions, please fork, make changes, ensure `make ci` passes, and submit a pull request. Happy scraping!
