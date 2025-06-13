@@ -42,7 +42,8 @@ $(VENV)/bin/activate:
 	@echo "To activate, run: source $(VENV)/bin/activate"
 
 install:
-	$(PIP) install -r requirements.txt
+	$(PIP) install -e .
+	$(PIP) install -r requirements-dev.txt
 
 ##------------------------------------------------------------------
 # Compile .in into pinned .txt

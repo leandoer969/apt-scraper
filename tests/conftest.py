@@ -6,16 +6,11 @@
 # pytest fixtures & path hack
 # pylint: disable=import-error
 
-import sys
 from pathlib import Path
 
 import pytest
 
 import src.cli as cli_mod
-
-# Ensure project root is importable for src.* imports
-PROJECT_ROOT = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(PROJECT_ROOT))
 
 
 @pytest.fixture(autouse=True)

@@ -22,7 +22,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
-{ name = "Jonathan", email = "[jonathan@lean.com](mailto:jonathan@lean.com)" } # TODO update email
+{ name = "Jonathan", email = "jonathan.leathers@bluewin.ch" } # TODO update email
 ]
 
 # Runtime dependencies for production
