@@ -98,7 +98,15 @@ ignore_missing_imports = true   # skip untyped third-party libraries
 minversion = "6.0"            # require recent pytest
 addopts = "-ra -q"            # shorter output with summary of extra info
 testpaths = ["tests"]         # directory to search for tests
-python_files = "test_*.py"
+python_files = ["test_*.py"]
 # pythonpath = src
 log_cli = true
 log_level = "INFO"
+
+# Enable src/ as the root of all packages
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]

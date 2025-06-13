@@ -11,7 +11,7 @@ BLACK := $(VENV)/bin/black
 ISORT := $(VENV)/bin/isort
 FLAKE8 := $(VENV)/bin/flake8
 MYPY := $(VENV)/bin/mypy
-PYTEST := $(VENV)/bin/pytest
+PYTEST := $(PYTHON) -m pytest
 
 .PHONY: help setup install precommit format lint typecheck test coverage ci snapshot clean
 
