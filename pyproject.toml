@@ -1,0 +1,104 @@
+# ----------------------------------------------------------------------------
+
+# pyproject.toml — unified configuration for build, tools, dependencies
+
+# ----------------------------------------------------------------------------
+
+[build-system]
+
+# Build requirements for packaging (setuptools + wheel)
+
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+
+# Basic project metadata
+
+name = "apt-scraper"
+version = "0.1.0"
+description = "A scraper for Swiss apartment listing sites, with logging, testing, and CI."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+{ name = "Jonathan", email = "[jonathan@lean.com](mailto:jonathan@lean.com)" } # TODO update email
+]
+
+# Runtime dependencies for production
+
+dependencies = [
+"requests",         # HTTP requests to fetch pages
+"beautifulsoup4",   # HTML parsing
+]
+
+[project.optional-dependencies]
+
+# Optional groups for easy installs: `pip install .[test]` or `.[dev]`
+
+test = [
+"pytest",           # test framework
+"pytest-cov",       # coverage reporting
+]
+
+dev = [
+
+# Formatting, linting, and import sorting
+
+"black",            # code formatter
+"isort",            # import sorter
+"flake8",           # lint checker
+"flake8-bugbear",   # extra lint rules
+
+# Type checking
+
+"mypy",             # static type analysis
+
+# Git hooks and dependency management
+
+"pre-commit",       # git hook manager
+"pip-tools",        # pip-compile & pip-sync
+]
+
+[tool.black]
+
+# Black formatter settings
+
+line-length = 88
+
+# Target Python interpreter version (for syntax)
+
+target-version = ["py311"]
+
+[tool.isort]
+
+# isort settings to be compatible with Black
+
+profile = "black"
+line_length = 88
+
+[tool.flake8]
+
+# Flake8 linting rules
+
+max-line-length = 88            # match Black’s wrapping
+extend-ignore = ["E203", "W503"]  # whitespace & line-break warnings not compatible with Black
+
+[tool.mypy]
+
+# MyPy static type-check settings
+
+python_version = "3.11"
+ignore_missing_imports = true   # skip untyped third-party libraries
+
+[tool.pytest.ini_options]
+
+# Pytest configuration
+
+minversion = "6.0"            # require recent pytest
+addopts = "-ra -q"            # shorter output with summary of extra info
+testpaths = ["tests"]         # directory to search for tests
+python_files = "test_*.py"
+# pythonpath = src
+log_cli = true
+log_level = "INFO"

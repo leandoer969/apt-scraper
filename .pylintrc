@@ -1,0 +1,15 @@
+[MASTER]
+init-hook='import sys; sys.path.insert(0, "src")'
+
+[MESSAGES CONTROL]
+# Definitely disable the ones we don’t care about:
+disable =
+    C0114,  # missing-module-docstring
+    C0103,  # invalid-name
+
+# Leave these on so Pylint will flag them:
+    #-- nothing here: import-error (E0401), unused-argument (W0613),
+    #-- too-many-branches (R0912), too-many-locals (R0914), etc.
+
+[FORMAT]
+max-line-length = 88
