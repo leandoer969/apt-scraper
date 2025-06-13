@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AptLogger</title>
+  <style>
+    body { font-family: sans-serif; padding: 12px; width: 320px; }
+    .field-label { font-weight: bold; margin-top: 6px; }
+    .field-value { margin-bottom: 6px; }
+    .info-box { background: #f9f9f9; padding: 10px; border-radius: 4px; font-size: 13px; }
+    button { width: 100%; padding: 10px; margin-top: 10px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+    #logBtn { background: #d6286e; color: white; }
+    #logBtn:hover { background: #ba165d; }
+    #copyBtn { background: #50b848; color: white; }
+    #copyBtn:hover { background: #3e993b; }
+  </style>
+</head>
+<body>
+  <h3>📋 Listing Preview</h3>
+  <div class="info-box" id="info"></div>
+  <button id="logBtn">✅ Log This Listing</button>
+  <button id="copyBtn">📋 Copy to Clipboard</button>
+  <script src="popup.js"></script>
+</body>
+</html>
